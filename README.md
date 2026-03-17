@@ -71,7 +71,11 @@
   - `POST /api/chat/complete`（非串流 fallback）
 
 - Speaking
-  - `POST /api/speaking`（文字模擬語音評估）
+  - `POST /api/speaking`（支援 STT/TTS provider 參數與發音評分）
+
+- Learning Path
+  - `POST /api/learning-path/generate`（依 CEFR 產生單字/文法/情境對話路徑）
+  - `GET /api/users/{id}/daily-practice`（每日任務）
 
 ---
 

@@ -114,18 +114,18 @@ User Input
 
 ### 4. 語音系統（Speaking）
 
-- [ ] Speech-to-Text（Whisper / Google STT）
-- [ ] Text-to-Speech（ElevenLabs / Azure）
-- [ ] 發音評分（簡易版先用 LLM）
+- [x] Speech-to-Text（Whisper / Google STT，MVP 先提供 provider 介面與 mock 轉寫）
+- [x] Text-to-Speech（ElevenLabs / Azure，MVP 先提供 provider 介面與 mock 音訊）
+- [x] 發音評分（簡易版先用啟發式 + LLM 回饋）
 
 ### 5. 學習路徑系統（Learning Path）
 
-- [ ] 初始能力測試 → CEFR 分級
-- [ ] 自動生成學習路徑：
+- [x] 初始能力測試 → CEFR 分級
+- [x] 自動生成學習路徑：
   - 單字
   - 文法
   - 情境對話
-- [ ] 每日任務（Daily Practice）
+- [x] 每日任務（Daily Practice）
 
 ### 6. 前端（React + TypeScript）
 

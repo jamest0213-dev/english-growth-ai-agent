@@ -19,9 +19,13 @@ from app.schemas import (
     AssessmentSubmitRequest,
     AssessmentSubmitResponse,
     ChatRequest,
+    DailyPracticeResponse,
     ErrorResponse,
     GrammarItem,
     GrammarResponse,
+    LearningPathGenerateRequest,
+    LearningPathGenerateResponse,
+    LearningPathTask,
     SessionFeedbackResponse,
     SessionStartRequest,
     SessionStartResponse,
@@ -37,6 +41,7 @@ from app.schemas import (
     VocabularySaveRequest,
     VocabularySaveResponse,
 )
+from app.speech_service import SpeechService
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -44,11 +49,13 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="English Growth AI Agent API", version="0.3.0")
 llm_service = LLMService()
 learning_engine = LearningEngine()
+speech_service = SpeechService()
 
 users_store: dict[int, dict] = {}
 sessions_store: dict[int, dict] = {}
 assessments_store: dict[int, dict] = {}
 vocabulary_store: dict[int, list[dict]] = {}
+learning_path_store: dict[int, list[dict]] = {}
 
 user_id_seq = 1
 session_id_seq = 1
@@ -116,6 +123,7 @@ def create_user(request: UserCreateRequest) -> UserResponse:
     }
     users_store[user_id] = user
     vocabulary_store.setdefault(user_id, [])
+    learning_path_store.setdefault(user_id, [])
     return UserResponse(**user)
 
 
@@ -336,17 +344,35 @@ async def chat_stream_compat(request: ChatRequest) -> StreamingResponse:
 
 @app.post("/api/speaking", response_model=SpeakingResponse)
 async def speaking(request: SpeakingRequest) -> SpeakingResponse:
+    try:
+        transcript = speech_service.speech_to_text(
+            text=request.text,
+            audio_base64=request.audio_base64,
+            provider=request.stt_provider,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail={"message": str(exc)}) from exc
+
     result = await llm_service.complete(
-        message=f"請對以下口說內容提供文法與流暢度建議：{request.text}", provider=request.provider
+        message=f"請對以下口說內容提供文法與流暢度建議：{transcript}", provider=request.provider
     )
     pipeline = learning_engine.run_pipeline(
-        user_input=request.text,
+        user_input=transcript,
         llm_output=result.content,
         user_cefr=request.cefr_level.upper(),
         history=[],
     )
+
+    pronunciation_score = speech_service.estimate_pronunciation_score(transcript, pipeline.feedback["growth_suggestion"])
+    tts_audio_base64 = None
+    tts_provider = None
+    if request.enable_tts:
+        tts_result = speech_service.text_to_speech(pipeline.feedback["growth_suggestion"], request.tts_provider)
+        tts_audio_base64 = tts_result.audio_base64
+        tts_provider = tts_result.provider
+
     return SpeakingResponse(
-        transcript=request.text,
+        transcript=transcript,
         feedback=pipeline.feedback["growth_suggestion"],
         pipeline={
             "analysis": pipeline.analysis,
@@ -357,6 +383,73 @@ async def speaking(request: SpeakingRequest) -> SpeakingResponse:
         provider=result.provider,
         is_mock=result.is_mock,
         warning=result.warning,
+        stt_provider=request.stt_provider,
+        tts_provider=tts_provider,
+        tts_audio_base64=tts_audio_base64,
+        pronunciation_score=pronunciation_score,
+    )
+
+
+def _build_learning_path(cefr_level: str) -> list[LearningPathTask]:
+    level = cefr_level.upper()
+    vocab_target = "基礎生活單字" if level in {"A1", "A2"} else "進階情境單字"
+    grammar_target = "現在式與過去式" if level in {"A1", "A2"} else "條件句與關係子句"
+    conversation_target = "旅遊與日常購物" if level in {"A1", "A2"} else "職場會議與簡報"
+
+    return [
+        LearningPathTask(
+            id=f"vocab-{level.lower()}",
+            category="vocabulary",
+            title=f"{level} 單字訓練",
+            objective=vocab_target,
+            recommended_minutes=20,
+        ),
+        LearningPathTask(
+            id=f"grammar-{level.lower()}",
+            category="grammar",
+            title=f"{level} 文法訓練",
+            objective=grammar_target,
+            recommended_minutes=20,
+        ),
+        LearningPathTask(
+            id=f"dialog-{level.lower()}",
+            category="conversation",
+            title=f"{level} 情境對話",
+            objective=conversation_target,
+            recommended_minutes=25,
+        ),
+    ]
+
+
+@app.post("/api/learning-path/generate", response_model=LearningPathGenerateResponse)
+def generate_learning_path(request: LearningPathGenerateRequest) -> LearningPathGenerateResponse:
+    user = users_store.get(request.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail={"user_id": request.user_id, "message": "找不到使用者"})
+
+    path = _build_learning_path(user["cefr_level"])
+    learning_path_store[request.user_id] = [task.model_dump() for task in path]
+    return LearningPathGenerateResponse(user_id=request.user_id, cefr_level=user["cefr_level"], path=path)
+
+
+@app.get("/api/users/{user_id}/daily-practice", response_model=DailyPracticeResponse)
+def get_daily_practice(user_id: int) -> DailyPracticeResponse:
+    user = users_store.get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail={"user_id": user_id, "message": "找不到使用者"})
+
+    path = learning_path_store.get(user_id)
+    if not path:
+        generated = _build_learning_path(user["cefr_level"])
+        path = [task.model_dump() for task in generated]
+        learning_path_store[user_id] = path
+
+    tasks = [LearningPathTask(**task) for task in path]
+    return DailyPracticeResponse(
+        user_id=user_id,
+        date=datetime.now(timezone.utc).date().isoformat(),
+        total_estimated_minutes=sum(item.recommended_minutes for item in tasks),
+        tasks=tasks,
     )
 
 

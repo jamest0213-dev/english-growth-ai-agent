@@ -86,17 +86,17 @@
   - [x] session 儲存
 
 ## 4) 語音系統（Speaking）
-- [ ] Speech-to-Text（Whisper / Google STT）
-- [ ] Text-to-Speech（ElevenLabs / Azure）
-- [ ] 發音評分（先用 LLM 版本）
+- [x] Speech-to-Text（Whisper / Google STT，MVP 先提供 provider 介面與 mock 轉寫）
+- [x] Text-to-Speech（ElevenLabs / Azure，MVP 先提供 provider 介面與 mock 音訊）
+- [x] 發音評分（先用簡易啟發式與 LLM 回饋整合）
 
 ## 5) 學習路徑系統（Learning Path）
-- [ ] 初始能力測試 → CEFR 分級
-- [ ] 自動生成學習路徑
-  - [ ] 單字
-  - [ ] 文法
-  - [ ] 情境對話
-- [ ] 每日任務（Daily Practice）
+- [x] 初始能力測試 → CEFR 分級
+- [x] 自動生成學習路徑
+  - [x] 單字
+  - [x] 文法
+  - [x] 情境對話
+- [x] 每日任務（Daily Practice）
 
 ## 6) 前端（React + TypeScript）
 - [ ] 套用 UI Design Token
