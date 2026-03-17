@@ -144,5 +144,5 @@
 - [ ] Writing 改為 Streaming（移除 `/api/chat/complete` 依賴）
 - [ ] Speaking 補真實錄音上傳與音訊預覽（非僅切換狀態）
 - [ ] Vocabulary 補齊 CRUD（新增/編輯/刪除/搜尋）
-- [ ] run_app 一鍵啟動改為可同時開啟前後端並導向前端首頁
+- [x] run_app 一鍵啟動改為可同時開啟前後端並導向前端首頁
 - [ ] 新增 release checklist（migration/備份/回滾/監控）
