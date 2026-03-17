@@ -67,23 +67,23 @@
   - [x] 建立例外到錯誤碼映射
 
 ## 3) LLM 學習引擎（核心）
-- [ ] 建立四大能力模組（Listening / Speaking / Reading / Writing）
-- [ ] 自適應學習（Adaptive Learning）
-  - [ ] 依 CEFR 等級調整題目
-  - [ ] 依錯誤率動態調整難度
-  - [ ] 依學習歷史調整單字複雜度與語速
-- [ ] AI 回饋引擎
-  - [ ] 文法修正
-  - [ ] 自然度建議
-  - [ ] 替代句型
-  - [ ] CEFR 等級判定
-  - [ ] 成長建議
-- [ ] Prompt Pipeline
-  - [ ] User Input 分析（Grammar / Intent / CEFR）
-  - [ ] LLM 回應
-  - [ ] Scoring
-  - [ ] 結構化 feedback
-  - [ ] session 儲存
+- [x] 建立四大能力模組（Listening / Speaking / Reading / Writing）
+- [x] 自適應學習（Adaptive Learning）
+  - [x] 依 CEFR 等級調整題目
+  - [x] 依錯誤率動態調整難度
+  - [x] 依學習歷史調整單字複雜度與語速
+- [x] AI 回饋引擎
+  - [x] 文法修正
+  - [x] 自然度建議
+  - [x] 替代句型
+  - [x] CEFR 等級判定
+  - [x] 成長建議
+- [x] Prompt Pipeline
+  - [x] User Input 分析（Grammar / Intent / CEFR）
+  - [x] LLM 回應
+  - [x] Scoring
+  - [x] 結構化 feedback
+  - [x] session 儲存
 
 ## 4) 語音系統（Speaking）
 - [ ] Speech-to-Text（Whisper / Google STT）

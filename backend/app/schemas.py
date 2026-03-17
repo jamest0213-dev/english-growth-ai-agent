@@ -29,6 +29,39 @@ class ChatResponse(BaseModel):
     content: str
 
 
+class AdaptivePlan(BaseModel):
+    exercise_difficulty: int
+    vocabulary_complexity: str
+    speech_rate: str
+
+
+class InputAnalysis(BaseModel):
+    grammar_issues: list[str]
+    intent: str
+    estimated_cefr: str
+    error_rate: float
+
+
+class FeedbackPayload(BaseModel):
+    grammar_correction: str
+    naturalness_suggestion: str
+    alternative_sentence: str
+    cefr_assessment: str
+    growth_suggestion: str
+
+
+class ScoringPayload(BaseModel):
+    score: int
+    confidence: float
+
+
+class SessionPipelinePayload(BaseModel):
+    analysis: InputAnalysis
+    adaptive_plan: AdaptivePlan
+    scoring: ScoringPayload
+    feedback: FeedbackPayload
+
+
 class UserCreateRequest(BaseModel):
     learner_name: str = Field(min_length=1, max_length=100)
     cefr_level: str = Field(default="A1", min_length=2, max_length=2)
@@ -73,12 +106,14 @@ class SessionSubmitResponse(BaseModel):
     session_id: int
     answer: str
     feedback: str
+    pipeline: SessionPipelinePayload
 
 
 class SessionFeedbackResponse(BaseModel):
     ok: bool = True
     session_id: int
     feedback: str
+    pipeline: SessionPipelinePayload
 
 
 class AssessmentStartRequest(BaseModel):
@@ -150,12 +185,14 @@ class VocabularySaveResponse(BaseModel):
 class SpeakingRequest(BaseModel):
     text: str = Field(min_length=1, max_length=5000, description="此版本以文字模擬語音轉文字")
     provider: str | None = Field(default=None, description="openai | gemini")
+    cefr_level: str = Field(default="A1", min_length=2, max_length=2)
 
 
 class SpeakingResponse(BaseModel):
     ok: bool = True
     transcript: str
     feedback: str
+    pipeline: SessionPipelinePayload
     provider: str
     is_mock: bool
     warning: str | None = None

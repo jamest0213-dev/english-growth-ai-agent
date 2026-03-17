@@ -79,7 +79,7 @@
 - Reading（閱讀）
 - Writing（寫作）
 
-#### [ ] 自適應學習（Adaptive Learning）
+#### [x] 自適應學習（Adaptive Learning）
 
 - 根據：
   - CEFR 等級（A1~C2）
@@ -90,7 +90,7 @@
   - 單字複雜度
   - 語速
 
-#### [ ] AI 回饋引擎
+#### [x] AI 回饋引擎
 
 輸出必須包含：
 - 文法修正
@@ -99,7 +99,7 @@
 - CEFR 等級判定
 - 成長建議
 
-#### [ ] Prompt Pipeline
+#### [x] Prompt Pipeline
 
 流程：
 
