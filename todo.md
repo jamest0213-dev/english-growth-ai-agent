@@ -38,33 +38,33 @@
 
 ## 2) 後端 API（FastAPI `/api`）
 ### 2.1 使用者與學習
-- [ ] POST `/users`
-- [ ] GET `/users/{id}`
-- [ ] GET `/users/{id}/progress`
+- [x] POST `/users`
+- [x] GET `/users/{id}`
+- [x] GET `/users/{id}/progress`
 
 ### 2.2 學習任務
-- [ ] POST `/sessions/start`
-- [ ] POST `/sessions/{id}/submit`
-- [ ] GET `/sessions/{id}/feedback`
+- [x] POST `/sessions/start`
+- [x] POST `/sessions/{id}/submit`
+- [x] GET `/sessions/{id}/feedback`
 
 ### 2.3 CEFR 評估
-- [ ] POST `/assessment/start`
-- [ ] POST `/assessment/submit`
-- [ ] GET `/assessment/result`
+- [x] POST `/assessment/start`
+- [x] POST `/assessment/submit`
+- [x] GET `/assessment/result`
 
 ### 2.4 單字與文法
-- [ ] GET `/vocabulary`
-- [ ] GET `/grammar`
-- [ ] POST `/vocabulary/save`
+- [x] GET `/vocabulary`
+- [x] GET `/grammar`
+- [x] POST `/vocabulary/save`
 
 ### 2.5 AI 對話（核心）
-- [ ] POST `/chat`（SSE streaming）
-- [ ] POST `/speaking`（語音→文字→回饋）
+- [x] POST `/chat`（SSE streaming）
+- [x] POST `/speaking`（語音→文字→回饋）
 
 ### 2.6 API 一致性
-- [ ] 統一錯誤格式
-  - [ ] 全 API 回傳 `{ok:false,error:{code,message,details}}`
-  - [ ] 建立例外到錯誤碼映射
+- [x] 統一錯誤格式
+  - [x] 全 API 回傳 `{ok:false,error:{code,message,details}}`
+  - [x] 建立例外到錯誤碼映射
 
 ## 3) LLM 學習引擎（核心）
 - [ ] 建立四大能力模組（Listening / Speaking / Reading / Writing）
@@ -112,10 +112,10 @@
 - [ ] 進度分析頁（CEFR 成長/錯誤類型/學習時間）
 
 ## 7) QA 驗收
-- [ ] Chat streaming 正常
+- [x] Chat streaming 正常
 - [ ] 回饋內容完整（文法/自然度/建議）
-- [ ] CEFR 評估合理
-- [ ] 語音可正常輸入/輸出
+- [x] CEFR 評估合理（rule-based MVP）
+- [x] 語音可正常輸入/輸出（文字模擬 STT）
 - [ ] session 可持久化
 
 ## 8) 文件與交付
