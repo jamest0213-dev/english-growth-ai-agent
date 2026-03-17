@@ -10,10 +10,10 @@
 ## 給一般使用者的最短操作
 
 1. 安裝 Python 3.11+
-2. 打開專案後進入 `backend` 資料夾
-3. 安裝套件：`pip install -r requirements.txt`
-4. 啟動服務：`uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`
-5. 開啟 API 文件：`http://127.0.0.1:8000/docs`
+2. 解壓縮專案後，直接雙擊根目錄 `run_app.bat`
+3. 等待自動安裝完成後，瀏覽器開啟 `http://127.0.0.1:8000/docs`
+
+> `run_app.bat` 會自動建立 `.venv`、安裝 `requirements.txt`，並啟動 `project_launcher.py`。
 
 > 若沒有設定 API Key，系統會自動使用 mock 模式，仍可完整演示流程。
 
@@ -89,6 +89,11 @@ english-growth-ai-agent/
 │  └─ prompt-design.md
 ├─ data/
 │  └─ app_state.json (執行後自動生成)
+├─ .env.example
+├─ .env
+├─ requirements.txt
+├─ project_launcher.py
+├─ run_app.bat
 ├─ todo.md
 └─ README.md
 ```

@@ -130,3 +130,10 @@
 - [x] backend 基本測試（pytest）
 - [x] 基本 lint 設定（ruff / next lint）
 - [x] `.env.example`
+
+## 10) 本次交付打包項目（Windows 一鍵啟動）
+- [x] 新增根目錄 `requirements.txt`
+- [x] 新增根目錄 `run_app.bat`
+- [x] 新增根目錄 `project_launcher.py`
+- [x] 將 `.env.example` 複製為 `.env`
+- [x] 產出可下載 ZIP 交付檔
