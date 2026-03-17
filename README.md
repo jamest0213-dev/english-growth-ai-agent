@@ -11,9 +11,11 @@
 
 1. 安裝 Python 3.11+
 2. 解壓縮專案後，直接雙擊根目錄 `run_app.bat`
-3. 等待自動安裝完成後，瀏覽器開啟 `http://127.0.0.1:8000/docs`
+3. 等待自動安裝完成後，瀏覽器會自動開啟前端首頁（預設 `http://127.0.0.1:3000`）
 
-> `run_app.bat` 會自動建立 `.venv`、安裝 `requirements.txt`，並啟動 `project_launcher.py`。
+> `run_app.bat` 會自動建立 `.venv`、安裝 `requirements.txt`，接著由 `project_launcher.py` 同步啟動後端（FastAPI）與前端（Next.js）。
+
+> 若首次啟動前端，`project_launcher.py` 會自動執行 `npm install` 安裝前端套件。
 
 > 若沒有設定 API Key，系統會自動使用 mock 模式，仍可完整演示流程。
 
@@ -96,8 +98,8 @@ english-growth-ai-agent/
 ├─ .env.example
 ├─ .env
 ├─ requirements.txt
-├─ project_launcher.py
-├─ run_app.bat
+├─ project_launcher.py  # 一次啟動前後端，並自動開啟瀏覽器
+├─ run_app.bat  # Windows 一鍵啟動入口
 ├─ todo.md
 └─ README.md
 ```
