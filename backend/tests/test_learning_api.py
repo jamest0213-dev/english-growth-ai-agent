@@ -105,3 +105,25 @@ def test_user_session_assessment_and_vocab_flow() -> None:
     assert progress_payload["total_sessions"] == 1
     assert progress_payload["completed_sessions"] == 1
     assert progress_payload["saved_vocabulary_count"] == 1
+
+
+def test_session_state_persisted_to_disk() -> None:
+    user_res = client.post("/api/users", json={"learner_name": "PersistUser", "cefr_level": "A1"})
+    user_id = user_res.json()["id"]
+
+    session_start_res = client.post("/api/sessions/start", json={"user_id": user_id, "topic": "Persistence"})
+    session_id = session_start_res.json()["session_id"]
+
+    feedback_res = client.post(f"/api/sessions/{session_id}/submit", json={"answer": "I go to school yesterday."})
+    assert feedback_res.status_code == 200
+
+    from pathlib import Path
+    import json
+
+    state_file = Path(__file__).resolve().parents[2] / "data" / "app_state.json"
+    assert state_file.exists()
+
+    payload = json.loads(state_file.read_text(encoding="utf-8"))
+    assert str(user_id) in payload["users_store"]
+    assert str(session_id) in payload["sessions_store"]
+    assert payload["sessions_store"][str(session_id)]["status"] == "submitted"

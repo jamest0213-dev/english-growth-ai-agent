@@ -116,14 +116,14 @@
 - [x] 回饋內容完整（文法/自然度/建議）
 - [x] CEFR 評估合理（rule-based MVP）
 - [x] 語音可正常輸入/輸出（文字模擬 STT）
-- [ ] session 可持久化
+- [x] session 可持久化
 
 ## 8) 文件與交付
 - [x] README（初版啟動教學與目錄結構）
-- [ ] README（最終版完整教學）
-- [ ] API 文件（Swagger）
-- [ ] Prompt 設計文件
-- [ ] 測試案例（CEFR A1~C1）
+- [x] README（最終版完整教學）
+- [x] API 文件（Swagger）
+- [x] Prompt 設計文件
+- [x] 測試案例（CEFR A1~C1）
 
 ## 9) 目前已完成的基礎項目（延續既有成果）
 - [x] `/healthz` endpoint

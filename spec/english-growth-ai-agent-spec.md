@@ -176,15 +176,15 @@ User Input
 
 ### 7. QA 驗收
 
-- [ ] Chat streaming 正常
-- [ ] 回饋內容完整（文法/自然度/建議）
-- [ ] CEFR 評估合理
-- [ ] 語音可正常輸入/輸出
-- [ ] session 可持久化
+- [x] Chat streaming 正常
+- [x] 回饋內容完整（文法/自然度/建議）
+- [x] CEFR 評估合理
+- [x] 語音可正常輸入/輸出
+- [x] session 可持久化
 
 ### 8. 文件與交付
 
-- [ ] README（完整教學）
-- [ ] API 文件（Swagger）
-- [ ] Prompt 設計文件
-- [ ] 測試案例（CEFR A1~C1）
+- [x] README（完整教學）
+- [x] API 文件（Swagger）
+- [x] Prompt 設計文件
+- [x] 測試案例（CEFR A1~C1）
