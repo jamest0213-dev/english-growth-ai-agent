@@ -4,6 +4,7 @@ import json
 import logging
 import traceback
 from datetime import datetime, timezone
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -42,6 +43,7 @@ from app.schemas import (
     VocabularySaveResponse,
 )
 from app.speech_service import SpeechService
+from app.state_store import AppState, StateStore
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -51,15 +53,33 @@ llm_service = LLMService()
 learning_engine = LearningEngine()
 speech_service = SpeechService()
 
-users_store: dict[int, dict] = {}
-sessions_store: dict[int, dict] = {}
-assessments_store: dict[int, dict] = {}
-vocabulary_store: dict[int, list[dict]] = {}
-learning_path_store: dict[int, list[dict]] = {}
+state_store = StateStore(Path(__file__).resolve().parents[2] / "data" / "app_state.json")
+state = state_store.load()
 
-user_id_seq = 1
-session_id_seq = 1
-assessment_id_seq = 1
+users_store: dict[int, dict] = state.users_store
+sessions_store: dict[int, dict] = state.sessions_store
+assessments_store: dict[int, dict] = state.assessments_store
+vocabulary_store: dict[int, list[dict]] = state.vocabulary_store
+learning_path_store: dict[int, list[dict]] = state.learning_path_store
+
+user_id_seq = state.user_id_seq
+session_id_seq = state.session_id_seq
+assessment_id_seq = state.assessment_id_seq
+
+
+def persist_state() -> None:
+    state_store.save(
+        AppState(
+            users_store=users_store,
+            sessions_store=sessions_store,
+            assessments_store=assessments_store,
+            vocabulary_store=vocabulary_store,
+            learning_path_store=learning_path_store,
+            user_id_seq=user_id_seq,
+            session_id_seq=session_id_seq,
+            assessment_id_seq=assessment_id_seq,
+        )
+    )
 
 DEFAULT_VOCABULARY = [
     VocabularyItem(id=1, word="achievement", meaning="成就"),
@@ -124,6 +144,7 @@ def create_user(request: UserCreateRequest) -> UserResponse:
     users_store[user_id] = user
     vocabulary_store.setdefault(user_id, [])
     learning_path_store.setdefault(user_id, [])
+    persist_state()
     return UserResponse(**user)
 
 
@@ -169,6 +190,7 @@ def start_session(request: SessionStartRequest) -> SessionStartResponse:
         "feedback": "",
     }
     sessions_store[session_id] = session
+    persist_state()
     return SessionStartResponse(**session)
 
 
@@ -208,6 +230,7 @@ async def submit_session(session_id: int, request: SessionSubmitRequest) -> Sess
     }
     session["score"] = pipeline.scoring["score"]
     session["status"] = "submitted"
+    persist_state()
 
     return SessionSubmitResponse(
         session_id=session_id,
@@ -270,6 +293,7 @@ def submit_assessment(request: AssessmentSubmitRequest) -> AssessmentSubmitRespo
     assessment.update({"status": "submitted", "score": score, "cefr_level": cefr_level})
     user = users_store[request.user_id]
     user["cefr_level"] = cefr_level
+    persist_state()
 
     return AssessmentSubmitResponse(assessment_id=request.assessment_id, cefr_level=cefr_level, score=score)
 
@@ -305,6 +329,7 @@ def save_vocabulary(request: VocabularySaveRequest) -> VocabularySaveResponse:
 
     user_vocab = vocabulary_store.setdefault(request.user_id, [])
     user_vocab.append({"word": request.word, "meaning": request.meaning})
+    persist_state()
     return VocabularySaveResponse(user_id=request.user_id, saved_count=len(user_vocab))
 
 
@@ -429,6 +454,7 @@ def generate_learning_path(request: LearningPathGenerateRequest) -> LearningPath
 
     path = _build_learning_path(user["cefr_level"])
     learning_path_store[request.user_id] = [task.model_dump() for task in path]
+    persist_state()
     return LearningPathGenerateResponse(user_id=request.user_id, cefr_level=user["cefr_level"], path=path)
 
 
@@ -443,6 +469,7 @@ def get_daily_practice(user_id: int) -> DailyPracticeResponse:
         generated = _build_learning_path(user["cefr_level"])
         path = [task.model_dump() for task in generated]
         learning_path_store[user_id] = path
+        persist_state()
 
     tasks = [LearningPathTask(**task) for task in path]
     return DailyPracticeResponse(

@@ -1,108 +1,68 @@
-# English Growth AI Agent MVP - Stage 1 API + Stage 0 Foundation
+# English Growth AI Agent
 
-目前已完成：
-- ✅ Stage 0（基礎架構）
-- ✅ Stage 1（核心 API MVP）
+這是一個英語學習 AI 助手 MVP，提供：
+- Chat 即時串流（SSE）
+- 文法/自然度/替代句型/CEFR/成長建議
+- CEFR 能力評估
+- Speaking（STT/TTS mock）
+- Session 狀態持久化（寫入 `data/app_state.json`）
 
-系統已具備完整後端 API、資料模型、LLM 串流與基礎前後端架構，可進行實際開發與測試。
+## 給一般使用者的最短操作
 
----
+1. 安裝 Python 3.11+
+2. 打開專案後進入 `backend` 資料夾
+3. 安裝套件：`pip install -r requirements.txt`
+4. 啟動服務：`uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`
+5. 開啟 API 文件：`http://127.0.0.1:8000/docs`
 
-## 本階段完成項目
-
-### 🔹 基礎架構（Stage 0）
-- 前端：Next.js + TypeScript + TailwindCSS 骨架
-- 後端：FastAPI 架構
-- LLM Adapter：OpenAI / Gemini / Mock
-- Streaming：`/api/chat/stream`（SSE）
-- fallback：`/api/chat`（非串流）
-- 無 API Key 自動 fallback Mock
-- 全域錯誤處理（Exception Handler + try-except）
-- logs 分級：
-  - `logs/info.log`
-  - `logs/warning.log`
-  - `logs/error.log`
-- 敏感資料遮罩（token / api key）
-- SQLite（dev） / PostgreSQL（prod）
-- Alembic migration
-- `GET /healthz` 健康檢查
+> 若沒有設定 API Key，系統會自動使用 mock 模式，仍可完整演示流程。
 
 ---
 
-### 🔹 核心學習資料模型（Stage 1 基礎）
-- `users`
-- `learning_profiles`
-- `sessions`
-- `exercises`
-- `responses`
-- `feedbacks`
-- `vocabularies`
-- `grammar_rules`
-- `speaking_records`
-- `learning_paths`
-- `progress_logs`
+## QA 驗收狀態（對應 spec 第 7 節）
+
+- [x] Chat streaming 正常（`/api/chat` + 測試）
+- [x] 回饋內容完整（文法/自然度/建議）
+- [x] CEFR 評估合理（A1~C1 測試案例）
+- [x] 語音可正常輸入/輸出（STT/TTS mock）
+- [x] session 可持久化（`data/app_state.json`）
+
+## 文件與交付狀態（對應 spec 第 8 節）
+
+- [x] README（完整教學）
+- [x] API 文件（Swagger）
+- [x] Prompt 設計文件
+- [x] 測試案例（CEFR A1~C1）
 
 ---
 
-### 🔹 後端 API（Stage 1 MVP）
-- 使用者與學習
-  - `POST /api/users`
-  - `GET /api/users/{id}`
-  - `GET /api/users/{id}/progress`
+## API 文件位置
 
-- 學習任務
-  - `POST /api/sessions/start`
-  - `POST /api/sessions/{id}/submit`
-  - `GET /api/sessions/{id}/feedback`
+- Swagger UI：`/docs`
+- ReDoc：`/redoc`
+- OpenAPI：`/openapi.json`
+- 補充說明：`spec/api-swagger.md`
 
-- CEFR 評估
-  - `POST /api/assessment/start`
-  - `POST /api/assessment/submit`
-  - `GET /api/assessment/result`
+## Prompt 設計文件
 
-- 單字與文法
-  - `GET /api/vocabulary`
-  - `GET /api/grammar`
-  - `POST /api/vocabulary/save`
+- `spec/prompt-design.md`
 
-- AI 對話
-  - `POST /api/chat`（SSE streaming）
-  - `POST /api/chat/stream`（舊路徑相容）
-  - `POST /api/chat/complete`（非串流 fallback）
+## 測試
 
-- Speaking
-  - `POST /api/speaking`（支援 STT/TTS provider 參數與發音評分）
+在 `backend/` 執行：
 
-- Learning Path
-  - `POST /api/learning-path/generate`（依 CEFR 產生單字/文法/情境對話路徑）
-  - `GET /api/users/{id}/daily-practice`（每日任務）
+- `pytest`
 
----
+涵蓋：
+- Chat streaming
+- 核心學習 API
+- CEFR A1~C1 案例
+- Session 持久化
 
-### 🔹 錯誤格式統一
-```json
-{
-  "ok": false,
-  "error": {
-    "code": "...",
-    "message": "...",
-    "details": {}
-  }
-}
-```
+## 設定檔
 
----
-
-## 前端 Stage 6 完成狀態（React + TypeScript）
-
-已完成並可在單一頁籤式介面中操作：
-- Dashboard：今日學習進度、CEFR 等級、成長曲線
-- 對話學習頁：SSE 串流、AI 角色切換、修正句/評分/建議
-- 單字學習頁：翻轉單字卡、發音、例句
-- 寫作訓練頁：輸入作文、AI 批改（Grammar + Style）
-- 口說訓練頁：錄音狀態切換、即時回饋、發音建議分數
-- 進度分析頁：CEFR 成長、錯誤類型統計、學習時間
-- Toast：支援一鍵複製訊息
+- `.env.example`：環境變數範例
+- `backend/app/config.py`：讀取 `OPENAI_API_KEY`、`GEMINI_API_KEY`、`DATABASE_URL`
 
 ## 最新目錄結構
 
@@ -110,16 +70,22 @@
 english-growth-ai-agent/
 ├─ backend/
 │  ├─ app/
-│  └─ tests/
+│  │  ├─ main.py
+│  │  ├─ learning_engine.py
+│  │  ├─ speech_service.py
+│  │  └─ state_store.py
+│  ├─ tests/
+│  │  ├─ test_chat.py
+│  │  ├─ test_learning_api.py
+│  │  └─ test_cefr_levels.py
+│  └─ requirements.txt
 ├─ frontend/
-│  ├─ app/
-│  │  ├─ globals.css
-│  │  ├─ layout.tsx
-│  │  └─ page.tsx
-│  ├─ package.json
-│  └─ tsconfig.json
 ├─ spec/
-│  └─ english-growth-ai-agent-spec.md
-├─ README.md
-└─ todo.md
+│  ├─ english-growth-ai-agent-spec.md
+│  ├─ api-swagger.md
+│  └─ prompt-design.md
+├─ data/
+│  └─ app_state.json (執行後自動生成)
+├─ todo.md
+└─ README.md
 ```
