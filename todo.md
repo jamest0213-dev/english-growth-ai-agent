@@ -15,7 +15,7 @@
   - [x] 補齊 Provider 切換設定（含無 API Key mock）
 - [x] 完成 Streaming 與 fallback 機制
   - [x] 實作 SSE 串流基礎元件（後端）
-  - [ ] 實作前端串流消費器（chat/speaking）
+  - [x] 實作前端串流消費器（chat/speaking）
   - [x] 實作非 streaming fallback
   - [x] 無 API Key 自動切換 mock，並在回應中顯示提醒
 - [x] 完成全域錯誤處理與 Logging
@@ -99,21 +99,21 @@
 - [x] 每日任務（Daily Practice）
 
 ## 6) 前端（React + TypeScript）
-- [ ] 套用 UI Design Token
-  - [ ] 主色 #1E3A8A
-  - [ ] 輔色 #C9A96E
-  - [ ] 背景 #F8FAFC
-  - [ ] Toast（支援可複製內容）
-- [ ] Dashboard（今日學習進度/CEFR/成長曲線）
-- [ ] Chat UI（即時串流 + 角色切換 + 修正句/評分/建議）
-- [ ] 單字學習頁（翻轉卡/發音/例句）
-- [ ] 寫作訓練頁（輸入作文 + AI 批改）
-- [ ] 口說訓練頁（錄音 + 即時回饋 + 發音建議）
-- [ ] 進度分析頁（CEFR 成長/錯誤類型/學習時間）
+- [x] 套用 UI Design Token
+  - [x] 主色 #1E3A8A
+  - [x] 輔色 #C9A96E
+  - [x] 背景 #F8FAFC
+  - [x] Toast（支援可複製內容）
+- [x] Dashboard（今日學習進度/CEFR/成長曲線）
+- [x] Chat UI（即時串流 + 角色切換 + 修正句/評分/建議）
+- [x] 單字學習頁（翻轉卡/發音/例句）
+- [x] 寫作訓練頁（輸入作文 + AI 批改）
+- [x] 口說訓練頁（錄音 + 即時回饋 + 發音建議）
+- [x] 進度分析頁（CEFR 成長/錯誤類型/學習時間）
 
 ## 7) QA 驗收
 - [x] Chat streaming 正常
-- [ ] 回饋內容完整（文法/自然度/建議）
+- [x] 回饋內容完整（文法/自然度/建議）
 - [x] CEFR 評估合理（rule-based MVP）
 - [x] 語音可正常輸入/輸出（文字模擬 STT）
 - [ ] session 可持久化

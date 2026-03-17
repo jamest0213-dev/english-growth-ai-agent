@@ -4,12 +4,12 @@ import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: 'English Growth AI Agent',
-  description: 'MVP scaffold',
+  description: '英語成長學習平台',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="zh-Hant">
       <body>{children}</body>
     </html>
   );

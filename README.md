@@ -89,3 +89,37 @@
     "details": {}
   }
 }
+```
+
+---
+
+## 前端 Stage 6 完成狀態（React + TypeScript）
+
+已完成並可在單一頁籤式介面中操作：
+- Dashboard：今日學習進度、CEFR 等級、成長曲線
+- 對話學習頁：SSE 串流、AI 角色切換、修正句/評分/建議
+- 單字學習頁：翻轉單字卡、發音、例句
+- 寫作訓練頁：輸入作文、AI 批改（Grammar + Style）
+- 口說訓練頁：錄音狀態切換、即時回饋、發音建議分數
+- 進度分析頁：CEFR 成長、錯誤類型統計、學習時間
+- Toast：支援一鍵複製訊息
+
+## 最新目錄結構
+
+```text
+english-growth-ai-agent/
+├─ backend/
+│  ├─ app/
+│  └─ tests/
+├─ frontend/
+│  ├─ app/
+│  │  ├─ globals.css
+│  │  ├─ layout.tsx
+│  │  └─ page.tsx
+│  ├─ package.json
+│  └─ tsconfig.json
+├─ spec/
+│  └─ english-growth-ai-agent-spec.md
+├─ README.md
+└─ todo.md
+```
