@@ -8,8 +8,10 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 
+from app.config import get_settings
 from app.learning_engine import LearningEngine
 from app.llm.service import LLMService
 from app.logging_config import configure_logging
@@ -47,8 +49,17 @@ from app.state_store import AppState, StateStore
 
 configure_logging()
 logger = logging.getLogger(__name__)
+settings = get_settings()
 
 app = FastAPI(title="English Growth AI Agent API", version="0.3.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_allow_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 llm_service = LLMService()
 learning_engine = LearningEngine()
 speech_service = SpeechService()

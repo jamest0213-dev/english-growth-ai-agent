@@ -15,6 +15,12 @@ class Settings:
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
 
+
+    @property
+    def cors_allow_origins(self) -> list[str]:
+        origins = os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+        return [origin.strip() for origin in origins.split(",") if origin.strip()]
+
     @property
     def database_url(self) -> str:
         if self.app_env.lower() == "development":
