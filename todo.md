@@ -8,20 +8,20 @@
   - [x] 建立 SQLAlchemy + Alembic 設定
   - [x] 建立第一版 migration
   - [x] 建立 PostgreSQL docker-compose 設定
-- [ ] 完成 LLM Provider Adapter（OpenAI / Gemini）
-  - [ ] 建立統一 Provider 介面
-  - [ ] 實作 OpenAI Adapter
-  - [ ] 實作 Gemini Adapter
-  - [ ] 補齊 Provider 切換設定（含無 API Key mock）
-- [ ] 完成 Streaming 與 fallback 機制
-  - [ ] 實作 SSE 串流基礎元件（後端）
+- [x] 完成 LLM Provider Adapter（OpenAI / Gemini）
+  - [x] 建立統一 Provider 介面
+  - [x] 實作 OpenAI Adapter
+  - [x] 實作 Gemini Adapter
+  - [x] 補齊 Provider 切換設定（含無 API Key mock）
+- [x] 完成 Streaming 與 fallback 機制
+  - [x] 實作 SSE 串流基礎元件（後端）
   - [ ] 實作前端串流消費器（chat/speaking）
-  - [ ] 實作非 streaming fallback
-  - [ ] 無 API Key 自動切換 mock，並在 UI 顯示提醒
-- [ ] 完成全域錯誤處理與 Logging
-  - [ ] 主程式入口全域 try-except
-  - [ ] logs/ 分級輸出（INFO/WARNING/ERROR）
-  - [ ] 設定敏感資訊遮罩（token/對話內容）
+  - [x] 實作非 streaming fallback
+  - [x] 無 API Key 自動切換 mock，並在回應中顯示提醒
+- [x] 完成全域錯誤處理與 Logging
+  - [x] 主程式入口全域 try-except
+  - [x] logs/ 分級輸出（INFO/WARNING/ERROR）
+  - [x] 設定敏感資訊遮罩（token/對話內容）
 
 ## 1) 核心資料模型（學習系統）
 - [x] users（使用者）
