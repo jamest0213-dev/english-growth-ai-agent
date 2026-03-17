@@ -36,6 +36,10 @@
 
 ---
 
+## 現況盤點與 Release 1 分析
+
+- `spec/release1-gap-analysis.md`
+
 ## API 文件位置
 
 - Swagger UI：`/docs`
