@@ -1,0 +1,18 @@
+name: 在{{什麼時候}}執行{{做什麼事}}
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 請將這行 cron 改成你想執行的時間（{{什麼時候}}）
+    - cron: '0 2 * * *'
+
+jobs:
+  run-custom-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 執行工作內容（{{做什麼事}}）
+        run: |
+          echo "請在這裡放入你的實際任務內容：{{做什麼事}}"
