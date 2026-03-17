@@ -1,106 +1,65 @@
-# English Growth AI Agent MVP - Stage 0 Scaffold
+# English Growth AI Agent MVP - Stage 0
 
-這一版只完成 **Stage 0 專案骨架**，讓你可以快速在本機啟動前後端與資料庫。
+目前已完成 **Stage 0（基礎準備）**：前後端分離、LLM Adapter、SSE Streaming + fallback、以及全域錯誤與 logging。
 
-## 本階段包含
-- Next.js + TypeScript + TailwindCSS 前端骨架
-- FastAPI 後端骨架
-- PostgreSQL（Docker）
-- Alembic migration 設定與第一版 migration
-- `GET /healthz` 健康檢查 API
-- 基本 lint / test 設定（Ruff + Pytest + Next lint）
-
-## 本階段不包含
-- 驗證登入（JWT）
-- AI 整合
-- CEFR 測評邏輯
-- 每日任務與學習流程
+## 本階段完成項目
+- 前端：Next.js + TypeScript + TailwindCSS 骨架
+- 後端：FastAPI 架構
+- LLM 統一 Adapter：OpenAI / Gemini / Mock
+- Streaming：`/api/chat/stream`（SSE）
+- fallback：`/api/chat`（非串流）
+- 無 API Key 時自動使用 Mock，且每次回應附上提醒訊息
+- 全域錯誤處理（`Exception Handler` + 主程式入口 `try-except`）
+- logs 分級輸出：`logs/info.log`、`logs/warning.log`、`logs/error.log`
+- 敏感資料遮罩（token / api key）
+- 開發環境預設 SQLite，正式環境可切 PostgreSQL
 
 ## 目錄結構
 ```text
 .
 ├── .env.example
 ├── docker-compose.yml
+├── logs/
+├── spec/
 ├── backend
-│   ├── alembic
-│   │   ├── env.py
-│   │   ├── script.py.mako
-│   │   └── versions
-│   │       └── 20261017_0001_create_user_progress.py
+│   ├── alembic/
 │   ├── app
+│   │   ├── llm/
+│   │   │   ├── adapters.py
+│   │   │   ├── base.py
+│   │   │   └── service.py
 │   │   ├── config.py
 │   │   ├── database.py
+│   │   ├── logging_config.py
 │   │   ├── main.py
-│   │   └── models.py
-│   ├── tests
-│   │   └── test_healthz.py
-│   ├── alembic.ini
-│   ├── Dockerfile
-│   ├── pyproject.toml
-│   └── requirements.txt
-├── frontend
-│   ├── app
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── .eslintrc.json
-│   ├── Dockerfile
-│   ├── next.config.js
-│   ├── package.json
-│   ├── postcss.config.js
-│   ├── tailwind.config.ts
-│   └── tsconfig.json
+│   │   ├── models.py
+│   │   └── schemas.py
+│   ├── tests/
+│   ├── requirements.txt
+│   └── pyproject.toml
+├── frontend/
 └── todo.md
 ```
 
-## 快速開始（建議）
-1. 複製環境變數檔：
+## 啟動方式
+1. 複製環境變數
    ```bash
    cp .env.example .env
    ```
-2. 啟動全部服務：
+2. 啟動服務
    ```bash
    docker compose up --build
    ```
-3. 開啟：
+3. 開啟網址
    - Frontend: http://localhost:3000
    - Backend health: http://localhost:8000/healthz
 
-## 僅測試 migration
-```bash
-docker compose up -d db
-docker compose run --rm backend alembic upgrade head
-```
+## API 範例
+- 非串流 fallback：`POST /api/chat`
+- 串流 SSE：`POST /api/chat/stream`
 
-## 本機（不使用 Docker）
-### Backend
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-alembic upgrade head
-uvicorn app.main:app --reload
-```
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## 測試與檢查
-### Backend
+## 測試
 ```bash
 cd backend
 pytest
-ruff check .
-```
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run lint
 ```
