@@ -137,3 +137,12 @@
 - [x] 新增根目錄 `project_launcher.py`
 - [x] 將 `.env.example` 複製為 `.env`
 - [x] 產出可下載 ZIP 交付檔
+
+## 11) Release 1 上線前缺口清單（2026-03 盤點）
+- [ ] 將主要 API 的資料來源由記憶體 store 收斂到 SQLAlchemy + PostgreSQL/SQLite
+- [ ] Dashboard/Analysis 前端改為串接真實 API，移除固定假資料
+- [ ] Writing 改為 Streaming（移除 `/api/chat/complete` 依賴）
+- [ ] Speaking 補真實錄音上傳與音訊預覽（非僅切換狀態）
+- [ ] Vocabulary 補齊 CRUD（新增/編輯/刪除/搜尋）
+- [ ] run_app 一鍵啟動改為可同時開啟前後端並導向前端首頁
+- [ ] 新增 release checklist（migration/備份/回滾/監控）
