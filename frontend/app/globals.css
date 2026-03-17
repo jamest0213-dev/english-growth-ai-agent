@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary: #1e3a8a;
+  --accent: #c9a96e;
+  --app-bg: #f8fafc;
+}
+
 body {
-  @apply bg-slate-100 text-slate-900;
+  @apply text-slate-900;
+  background: var(--app-bg);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.bg-app-bg {
+  background-color: var(--app-bg);
 }
