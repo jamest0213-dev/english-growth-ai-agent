@@ -1,0 +1,10 @@
+- [x] 建立 frontend 專案骨架（Next.js + TS + Tailwind）
+- [x] 建立 backend 專案骨架（FastAPI）
+- [x] 建立 PostgreSQL docker-compose 設定
+- [x] 設定 SQLAlchemy + Alembic
+- [x] 建立第一版 migration
+- [x] 新增 `/healthz` endpoint
+- [x] 建立基本測試（pytest）
+- [x] 建立基本 lint 設定（ruff / next lint）
+- [x] 補齊 `.env.example`
+- [x] 更新 README（含清楚啟動步驟與目錄結構）
