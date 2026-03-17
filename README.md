@@ -1,6 +1,6 @@
 # English Growth AI Agent MVP - Stage 0 Scaffold
 
-這一版只完成 **Stage 0 專案骨架**，讓你可以快速在本機啟動前後端與資料庫。
+這一版已完成 **Stage 0 專案骨架 + 核心學習資料模型（Stage 1 部分）**，讓你可以快速在本機啟動前後端與資料庫，並具備核心資料表。
 
 ## 本階段包含
 - Next.js + TypeScript + TailwindCSS 前端骨架
@@ -8,9 +8,10 @@
 - PostgreSQL（Docker）
 - Alembic migration 設定與第一版 migration
 - `GET /healthz` 健康檢查 API
+- 核心學習資料模型（users / learning_profiles / sessions / exercises / responses / feedbacks / vocabularies / grammar_rules / speaking_records / learning_paths / progress_logs）
 - 基本 lint / test 設定（Ruff + Pytest + Next lint）
 
-## 本階段不包含
+## 本階段尚未包含
 - 驗證登入（JWT）
 - AI 整合
 - CEFR 測評邏輯
@@ -26,14 +27,16 @@
 │   │   ├── env.py
 │   │   ├── script.py.mako
 │   │   └── versions
-│   │       └── 20261017_0001_create_user_progress.py
+│   │       ├── 20261017_0001_create_user_progress.py
+│   │       └── 20261017_0002_add_learning_system_core_tables.py
 │   ├── app
 │   │   ├── config.py
 │   │   ├── database.py
 │   │   ├── main.py
 │   │   └── models.py
 │   ├── tests
-│   │   └── test_healthz.py
+│   │   ├── test_healthz.py
+│   │   └── test_models.py
 │   ├── alembic.ini
 │   ├── Dockerfile
 │   ├── pyproject.toml
