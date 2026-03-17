@@ -24,17 +24,17 @@
   - [x] 設定敏感資訊遮罩（token/對話內容）
 
 ## 1) 核心資料模型（學習系統）
-- [ ] users（使用者）
-- [ ] learning_profiles（CEFR 等級、目標）
-- [ ] sessions（學習歷程）
-- [ ] exercises（題目）
-- [ ] responses（使用者回答）
-- [ ] feedbacks（AI 回饋）
-- [ ] vocabularies（單字庫）
-- [ ] grammar_rules（文法）
-- [ ] speaking_records（語音紀錄）
-- [ ] learning_paths（學習路徑）
-- [ ] progress_logs（能力成長紀錄）
+- [x] users（使用者）
+- [x] learning_profiles（CEFR 等級、目標）
+- [x] sessions（學習歷程）
+- [x] exercises（題目）
+- [x] responses（使用者回答）
+- [x] feedbacks（AI 回饋）
+- [x] vocabularies（單字庫）
+- [x] grammar_rules（文法）
+- [x] speaking_records（語音紀錄）
+- [x] learning_paths（學習路徑）
+- [x] progress_logs（能力成長紀錄）
 
 ## 2) 後端 API（FastAPI `/api`）
 ### 2.1 使用者與學習

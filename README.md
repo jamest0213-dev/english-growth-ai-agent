@@ -1,6 +1,7 @@
+
 # English Growth AI Agent MVP - Stage 0
 
-目前已完成 **Stage 0（基礎準備）**：前後端分離、LLM Adapter、SSE Streaming + fallback、以及全域錯誤與 logging。
+目前已完成 **Stage 0（基礎準備）**，並納入 **Stage 1 部分核心學習資料模型**，可快速在本機啟動前後端與資料庫，並具備可延伸的基礎架構。
 
 ## 本階段完成項目
 - 前端：Next.js + TypeScript + TailwindCSS 骨架
@@ -13,6 +14,27 @@
 - logs 分級輸出：`logs/info.log`、`logs/warning.log`、`logs/error.log`
 - 敏感資料遮罩（token / api key）
 - 開發環境預設 SQLite，正式環境可切 PostgreSQL
+- Alembic migration 設定與初始 migration
+- `GET /healthz` 健康檢查 API
+- 核心學習資料模型：
+  - `users`
+  - `learning_profiles`
+  - `sessions`
+  - `exercises`
+  - `responses`
+  - `feedbacks`
+  - `vocabularies`
+  - `grammar_rules`
+  - `speaking_records`
+  - `learning_paths`
+  - `progress_logs`
+
+## 本階段尚未包含
+- 驗證登入（JWT）
+- AI 個人化教學策略深化
+- CEFR 正式測評邏輯
+- 每日任務與完整學習流程編排
+- 正式版權限管理與後台營運功能
 
 ## 目錄結構
 ```text
@@ -21,9 +43,14 @@
 ├── docker-compose.yml
 ├── logs/
 ├── spec/
-├── backend
+├── backend/
 │   ├── alembic/
-│   ├── app
+│   │   ├── env.py
+│   │   ├── script.py.mako
+│   │   └── versions/
+│   │       ├── 20261017_0001_create_user_progress.py
+│   │       └── 20261017_0002_add_learning_system_core_tables.py
+│   ├── app/
 │   │   ├── llm/
 │   │   │   ├── adapters.py
 │   │   │   ├── base.py
@@ -35,31 +62,22 @@
 │   │   ├── models.py
 │   │   └── schemas.py
 │   ├── tests/
-│   ├── requirements.txt
-│   └── pyproject.toml
+│   │   ├── test_healthz.py
+│   │   └── test_models.py
+│   ├── alembic.ini
+│   ├── Dockerfile
+│   ├── pyproject.toml
+│   └── requirements.txt
 ├── frontend/
+│   ├── app/
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── .eslintrc.json
+│   ├── Dockerfile
+│   ├── next.config.js
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
 └── todo.md
-```
-
-## 啟動方式
-1. 複製環境變數
-   ```bash
-   cp .env.example .env
-   ```
-2. 啟動服務
-   ```bash
-   docker compose up --build
-   ```
-3. 開啟網址
-   - Frontend: http://localhost:3000
-   - Backend health: http://localhost:8000/healthz
-
-## API 範例
-- 非串流 fallback：`POST /api/chat`
-- 串流 SSE：`POST /api/chat/stream`
-
-## 測試
-```bash
-cd backend
-pytest
-```
