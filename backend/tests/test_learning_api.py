@@ -63,11 +63,41 @@ def test_user_session_assessment_and_vocab_flow() -> None:
 
     speaking_res = client.post(
         "/api/speaking",
-        json={"text": "I am practicing speaking every day.", "cefr_level": "A2"},
+        json={
+            "text": "I am practicing speaking every day.",
+            "cefr_level": "A2",
+            "enable_tts": True,
+            "tts_provider": "azure",
+        },
     )
     assert speaking_res.status_code == 200
     assert speaking_res.json()["transcript"]
     assert speaking_res.json()["pipeline"]["feedback"]["naturalness_suggestion"]
+    assert speaking_res.json()["pronunciation_score"] >= 45
+    assert speaking_res.json()["tts_audio_base64"]
+
+    speaking_stt_res = client.post(
+        "/api/speaking",
+        json={
+            "audio_base64": "U1RUIERFTU8=",
+            "stt_provider": "whisper",
+            "cefr_level": "A2",
+        },
+    )
+    assert speaking_stt_res.status_code == 200
+    assert speaking_stt_res.json()["transcript"].startswith("[mock-whisper]")
+
+    learning_path_res = client.post("/api/learning-path/generate", json={"user_id": user_id})
+    assert learning_path_res.status_code == 200
+    path_payload = learning_path_res.json()
+    assert len(path_payload["path"]) == 3
+    assert {task["category"] for task in path_payload["path"]} == {"vocabulary", "grammar", "conversation"}
+
+    daily_practice_res = client.get(f"/api/users/{user_id}/daily-practice")
+    assert daily_practice_res.status_code == 200
+    daily_payload = daily_practice_res.json()
+    assert daily_payload["total_estimated_minutes"] > 0
+    assert len(daily_payload["tasks"]) == 3
 
     progress_res = client.get(f"/api/users/{user_id}/progress")
     assert progress_res.status_code == 200

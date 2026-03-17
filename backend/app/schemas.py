@@ -183,7 +183,11 @@ class VocabularySaveResponse(BaseModel):
 
 
 class SpeakingRequest(BaseModel):
-    text: str = Field(min_length=1, max_length=5000, description="此版本以文字模擬語音轉文字")
+    text: str | None = Field(default=None, min_length=1, max_length=5000, description="已轉文字內容")
+    audio_base64: str | None = Field(default=None, description="語音檔案的 base64 內容")
+    stt_provider: str = Field(default="whisper", description="whisper | google")
+    tts_provider: str = Field(default="azure", description="azure | elevenlabs")
+    enable_tts: bool = Field(default=False)
     provider: str | None = Field(default=None, description="openai | gemini")
     cefr_level: str = Field(default="A1", min_length=2, max_length=2)
 
@@ -196,3 +200,34 @@ class SpeakingResponse(BaseModel):
     provider: str
     is_mock: bool
     warning: str | None = None
+    stt_provider: str
+    tts_provider: str | None = None
+    tts_audio_base64: str | None = None
+    pronunciation_score: int
+
+
+class LearningPathTask(BaseModel):
+    id: str
+    category: str
+    title: str
+    objective: str
+    recommended_minutes: int
+
+
+class LearningPathGenerateRequest(BaseModel):
+    user_id: int
+
+
+class LearningPathGenerateResponse(BaseModel):
+    ok: bool = True
+    user_id: int
+    cefr_level: str
+    path: list[LearningPathTask]
+
+
+class DailyPracticeResponse(BaseModel):
+    ok: bool = True
+    user_id: int
+    date: str
+    total_estimated_minutes: int
+    tasks: list[LearningPathTask]
