@@ -13,6 +13,8 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
+RUNTIME_PORT_FILE = "port.config"
+
 
 def _find_available_port(start_port: int, max_attempts: int = 20) -> int:
     port = start_port
@@ -42,6 +44,16 @@ def _frontend_command() -> list[str]:
     return [npm_name, "run", "dev"]
 
 
+def _write_runtime_ports(repo_root: Path, backend_port: int, frontend_port: int) -> None:
+    content = (
+        f"BACKEND_PORT={backend_port}\n"
+        f"FRONTEND_PORT={frontend_port}\n"
+        f"BACKEND_URL=http://127.0.0.1:{backend_port}\n"
+        f"FRONTEND_URL=http://127.0.0.1:{frontend_port}\n"
+    )
+    (repo_root / RUNTIME_PORT_FILE).write_text(content, encoding="utf-8")
+
+
 def main() -> int:
     backend_process: subprocess.Popen | None = None
     frontend_process: subprocess.Popen | None = None
@@ -63,6 +75,7 @@ def main() -> int:
 
         backend_port = _find_available_port(preferred_backend_port)
         frontend_port = _find_available_port(3000)
+        _write_runtime_ports(repo_root, backend_port, frontend_port)
 
         backend_env = os.environ.copy()
         backend_env["CORS_ALLOW_ORIGINS"] = ",".join(
@@ -102,6 +115,7 @@ def main() -> int:
 
         if shutil.which("node") is None:
             print("[WARN] 尚未安裝 Node.js，無法啟動前端。")
+            print("請先安裝 Node.js LTS（https://nodejs.org/），安裝完成後再雙擊 run_app.bat。")
             print(f"目前可先使用 Swagger 文件：http://127.0.0.1:{backend_port}/docs")
             webbrowser.open(f"http://127.0.0.1:{backend_port}/docs")
             backend_process.wait()
@@ -110,6 +124,7 @@ def main() -> int:
         npm_name = "npm.cmd" if os.name == "nt" else "npm"
         if shutil.which(npm_name) is None:
             print("[WARN] 找不到 npm，無法啟動前端。")
+            print("請重新安裝 Node.js LTS（需包含 npm），再雙擊 run_app.bat。")
             print(f"目前可先使用 Swagger 文件：http://127.0.0.1:{backend_port}/docs")
             webbrowser.open(f"http://127.0.0.1:{backend_port}/docs")
             backend_process.wait()
@@ -118,7 +133,8 @@ def main() -> int:
         next_binary = frontend_dir / "node_modules" / ".bin" / ("next.cmd" if os.name == "nt" else "next")
         if not next_binary.exists():
             print("正在安裝/修復前端套件（約需 1~3 分鐘）...")
-            install = subprocess.run([npm_name, "install"], cwd=frontend_dir)
+            install_cmd = [npm_name, "ci"] if (frontend_dir / "package-lock.json").exists() else [npm_name, "install"]
+            install = subprocess.run(install_cmd, cwd=frontend_dir)
             if install.returncode != 0:
                 print("[ERROR] 前端套件安裝失敗，請檢查網路後重試。")
                 return install.returncode
