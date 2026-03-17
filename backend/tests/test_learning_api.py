@@ -23,9 +23,16 @@ def test_user_session_assessment_and_vocab_flow() -> None:
     submit_res = client.post(f"/api/sessions/{session_id}/submit", json={"answer": "I go to airport yesterday."})
     assert submit_res.status_code == 200
     assert submit_res.json()["feedback"]
+    submit_payload = submit_res.json()
+    assert "pipeline" in submit_payload
+    assert submit_payload["pipeline"]["feedback"]["grammar_correction"]
+    assert submit_payload["pipeline"]["feedback"]["cefr_assessment"]
+    assert submit_payload["pipeline"]["adaptive_plan"]["speech_rate"]
 
     feedback_res = client.get(f"/api/sessions/{session_id}/feedback")
     assert feedback_res.status_code == 200
+    feedback_payload = feedback_res.json()
+    assert feedback_payload["pipeline"]["scoring"]["score"] >= 0
 
     assessment_start = client.post("/api/assessment/start", json={"user_id": user_id})
     assert assessment_start.status_code == 200
@@ -54,9 +61,13 @@ def test_user_session_assessment_and_vocab_flow() -> None:
     )
     assert vocab_save_res.status_code == 200
 
-    speaking_res = client.post("/api/speaking", json={"text": "I am practicing speaking every day."})
+    speaking_res = client.post(
+        "/api/speaking",
+        json={"text": "I am practicing speaking every day.", "cefr_level": "A2"},
+    )
     assert speaking_res.status_code == 200
     assert speaking_res.json()["transcript"]
+    assert speaking_res.json()["pipeline"]["feedback"]["naturalness_suggestion"]
 
     progress_res = client.get(f"/api/users/{user_id}/progress")
     assert progress_res.status_code == 200

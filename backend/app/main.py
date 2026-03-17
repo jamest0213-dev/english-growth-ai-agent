@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 
+from app.learning_engine import LearningEngine
 from app.llm.service import LLMService
 from app.logging_config import configure_logging
 from app.schemas import (
@@ -42,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="English Growth AI Agent API", version="0.3.0")
 llm_service = LLMService()
+learning_engine = LearningEngine()
 
 users_store: dict[int, dict] = {}
 sessions_store: dict[int, dict] = {}
@@ -168,15 +170,43 @@ async def submit_session(session_id: int, request: SessionSubmitRequest) -> Sess
     if not session:
         raise HTTPException(status_code=404, detail={"session_id": session_id, "message": "找不到學習任務"})
 
+    user = users_store.get(session["user_id"])
+    if not user:
+        raise HTTPException(status_code=404, detail={"user_id": session["user_id"], "message": "找不到使用者"})
+
     llm_result = await llm_service.complete(
         message=f"請針對以下英文回答給學習建議：{request.answer}", provider=request.provider
     )
 
+    user_history = [
+        {"score": s.get("score", 60)}
+        for s in sessions_store.values()
+        if s["user_id"] == session["user_id"] and s["status"] == "submitted"
+    ]
+    pipeline = learning_engine.run_pipeline(
+        user_input=request.answer,
+        llm_output=llm_result.content,
+        user_cefr=user["cefr_level"],
+        history=user_history,
+    )
+
     session["answer"] = request.answer
-    session["feedback"] = llm_result.content
+    session["feedback"] = pipeline.feedback["growth_suggestion"]
+    session["pipeline"] = {
+        "analysis": pipeline.analysis,
+        "adaptive_plan": pipeline.adaptive_plan,
+        "scoring": pipeline.scoring,
+        "feedback": pipeline.feedback,
+    }
+    session["score"] = pipeline.scoring["score"]
     session["status"] = "submitted"
 
-    return SessionSubmitResponse(session_id=session_id, answer=request.answer, feedback=llm_result.content)
+    return SessionSubmitResponse(
+        session_id=session_id,
+        answer=request.answer,
+        feedback=session["feedback"],
+        pipeline=session["pipeline"],
+    )
 
 
 @app.get("/api/sessions/{session_id}/feedback", response_model=SessionFeedbackResponse)
@@ -188,7 +218,11 @@ def get_session_feedback(session_id: int) -> SessionFeedbackResponse:
     if not session["feedback"]:
         raise HTTPException(status_code=400, detail={"session_id": session_id, "message": "尚未提交答案"})
 
-    return SessionFeedbackResponse(session_id=session_id, feedback=session["feedback"])
+    return SessionFeedbackResponse(
+        session_id=session_id,
+        feedback=session["feedback"],
+        pipeline=session["pipeline"],
+    )
 
 
 @app.post("/api/assessment/start", response_model=AssessmentStartResponse)
@@ -305,9 +339,21 @@ async def speaking(request: SpeakingRequest) -> SpeakingResponse:
     result = await llm_service.complete(
         message=f"請對以下口說內容提供文法與流暢度建議：{request.text}", provider=request.provider
     )
+    pipeline = learning_engine.run_pipeline(
+        user_input=request.text,
+        llm_output=result.content,
+        user_cefr=request.cefr_level.upper(),
+        history=[],
+    )
     return SpeakingResponse(
         transcript=request.text,
-        feedback=result.content,
+        feedback=pipeline.feedback["growth_suggestion"],
+        pipeline={
+            "analysis": pipeline.analysis,
+            "adaptive_plan": pipeline.adaptive_plan,
+            "scoring": pipeline.scoring,
+            "feedback": pipeline.feedback,
+        },
         provider=result.provider,
         is_mock=result.is_mock,
         warning=result.warning,
