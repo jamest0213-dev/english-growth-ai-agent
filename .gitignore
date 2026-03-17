@@ -16,7 +16,10 @@ backend/.env
 # Runtime artifacts
 logs/
 backend/data/
+port.config
 
 # IDE
 .vscode/
 .idea/
+
+data/

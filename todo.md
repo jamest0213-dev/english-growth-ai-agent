@@ -146,3 +146,10 @@
 - [ ] Vocabulary 補齊 CRUD（新增/編輯/刪除/搜尋）
 - [x] run_app 一鍵啟動改為可同時開啟前後端並導向前端首頁
 - [ ] 新增 release checklist（migration/備份/回滾/監控）
+
+## 12) 本次穩定性修復（啟動失敗問題）
+- [x] `run_app.bat` 增加 Python 啟動器自動偵測（`py`/`python`）與友善錯誤提示
+- [x] `project_launcher.py` 啟動時寫入 `port.config`，保留實際埠號
+- [x] 前端套件安裝策略改為優先 `npm ci`（有 lock 檔時）提升穩定性
+- [x] 缺少 Node.js / npm 時提供繁中安裝指引
+

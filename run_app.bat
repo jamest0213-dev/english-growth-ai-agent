@@ -4,9 +4,26 @@ setlocal enabledelayedexpansion
 
 cd /d "%~dp0"
 
+set "PYTHON_BOOTSTRAP="
+where py >nul 2>nul
+if not errorlevel 1 (
+  set "PYTHON_BOOTSTRAP=py -3"
+) else (
+  where python >nul 2>nul
+  if not errorlevel 1 (
+    set "PYTHON_BOOTSTRAP=python"
+  )
+)
+
+if "%PYTHON_BOOTSTRAP%"=="" (
+  echo [ERROR] 找不到 Python。請先安裝 Python 3.11 以上版本，並勾選「Add python.exe to PATH」。
+  pause
+  exit /b 1
+)
+
 if not exist ".venv" (
   echo [INFO] 正在建立虛擬環境...
-  py -3 -m venv .venv
+  %PYTHON_BOOTSTRAP% -m venv .venv
   if errorlevel 1 (
     echo [ERROR] 無法建立 Python 虛擬環境，請先安裝 Python 3.11 以上版本。
     pause

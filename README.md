@@ -19,6 +19,10 @@
 
 > 若沒有設定 API Key，系統會自動使用 mock 模式，仍可完整演示流程。
 
+> 啟動時會自動偵測可用的後端/前端連接埠，並寫入根目錄 `port.config`（供除錯與整合時查閱）。
+
+> 若電腦尚未安裝 Node.js，啟動器會用中文提示安裝步驟，並先開啟後端 Swagger 讓你可先確認 API 正常。
+
 ---
 
 ## QA 驗收狀態（對應 spec 第 7 節）
@@ -97,6 +101,7 @@ english-growth-ai-agent/
 │  └─ app_state.json (執行後自動生成)
 ├─ .env.example
 ├─ .env
+├─ port.config  # 啟動時自動生成，記錄實際使用連接埠
 ├─ requirements.txt
 ├─ project_launcher.py  # 一次啟動前後端，並自動開啟瀏覽器
 ├─ run_app.bat  # Windows 一鍵啟動入口
