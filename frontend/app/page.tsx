@@ -121,6 +121,7 @@ function ChatSection({ pushToast }: { pushToast: (title: string, message: string
   const [message, setMessage] = useState('I goed to school yesterday.');
   const [streamingText, setStreamingText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isMockMode, setIsMockMode] = useState(false);
 
   const roleLabel = useMemo(
     () => ({ teacher: '老師', interviewer: '面試官', travel: '旅遊情境' }[role] ?? '老師'),
@@ -131,6 +132,7 @@ function ChatSection({ pushToast }: { pushToast: (title: string, message: string
     event.preventDefault();
     setIsLoading(true);
     setStreamingText('');
+    setIsMockMode(false);
 
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
     try {
@@ -156,17 +158,26 @@ function ChatSection({ pushToast }: { pushToast: (title: string, message: string
         lines.forEach((line) => {
           const payloadText = line.replace('data: ', '').trim();
           if (!payloadText) return;
-          const payload = JSON.parse(payloadText) as { type: string; content?: string; message?: string };
-          if (payload.type === 'chunk' && payload.content) {
-            setStreamingText((prev) => prev + payload.content);
-          }
-          if (payload.type === 'warning' && payload.message) {
-            pushToast('系統提醒', payload.message);
+
+          try {
+            const payload = JSON.parse(payloadText) as { type: string; content?: string; message?: string; is_mock?: boolean };
+            if (payload.type === 'chunk' && payload.content) {
+              setStreamingText((prev) => prev + payload.content);
+              if (payload.is_mock) {
+                setIsMockMode(true);
+              }
+            }
+            if (payload.type === 'warning' && payload.message) {
+              setIsMockMode(true);
+              pushToast('系統提醒', payload.message);
+            }
+          } catch {
+            pushToast('資料格式提醒', '收到無法解析的回應片段，系統已自動略過。');
           }
         });
       }
     } catch (error) {
-      pushToast('串流失敗', '目前無法連線到後端，已保留輸入內容。');
+      pushToast('串流失敗', '系統暫時無法連線，請確認後端是否啟動。');
     } finally {
       setIsLoading(false);
     }
@@ -188,6 +199,7 @@ function ChatSection({ pushToast }: { pushToast: (title: string, message: string
       </form>
 
       <div className="rounded-xl bg-slate-50 p-4">
+        {isMockMode && <p className="mb-2 rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-800">目前為模擬模式（Mock），內容僅供測試。</p>}
         <p>
           <strong>修正句：</strong>
           {streamingText || '尚未產生'}

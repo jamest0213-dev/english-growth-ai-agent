@@ -1,110 +1,147 @@
 # English Growth AI Agent
 
-這是一個英語學習 AI 助手 MVP，提供：
-- Chat 即時串流（SSE）
-- 文法/自然度/替代句型/CEFR/成長建議
-- CEFR 能力評估
-- Speaking（STT/TTS mock）
-- Session 狀態持久化（寫入 `data/app_state.json`）
-
-## 給一般使用者的最短操作
-
-1. 安裝 Python 3.11+
-2. 解壓縮專案後，直接雙擊根目錄 `run_app.bat`
-3. 等待自動安裝完成後，瀏覽器會自動開啟前端首頁（預設 `http://127.0.0.1:3000`）
-
-> `run_app.bat` 會自動建立 `.venv`、安裝 `requirements.txt`，接著由 `project_launcher.py` 同步啟動後端（FastAPI）與前端（Next.js）。
-
-> 若首次啟動前端，`project_launcher.py` 會自動執行 `npm install` 安裝前端套件。
-
-> 若沒有設定 API Key，系統會自動使用 mock 模式，仍可完整演示流程。
-
-> 啟動時會自動偵測可用的後端/前端連接埠，並寫入根目錄 `port.config`（供除錯與整合時查閱）。
-
-> 若電腦尚未安裝 Node.js，啟動器會用中文提示安裝步驟，並先開啟後端 Swagger 讓你可先確認 API 正常。
+English Growth AI Agent 是一個以 **CEFR 分級、聽說讀寫、AI 回饋、學習歷程** 為核心的英文學習專案。  
+目前以 **Windows 本地啟動穩定** 為第一優先，先完成 Stage 0 / Stage 0.5 驗收，再逐步擴充功能。
 
 ---
 
-## QA 驗收狀態（對應 spec 第 7 節）
+## 1) Windows 本地啟動（Stage 0）
 
-- [x] Chat streaming 正常（`/api/chat` + 測試）
-- [x] 回饋內容完整（文法/自然度/建議）
-- [x] CEFR 評估合理（A1~C1 測試案例）
-- [x] 語音可正常輸入/輸出（STT/TTS mock）
-- [x] session 可持久化（`data/app_state.json`）
+> 建議環境：Windows 10/11、Python 3.11+、Node.js 20+
 
-## 文件與交付狀態（對應 spec 第 8 節）
+### 步驟 A：設定環境變數
 
-- [x] README（完整教學）
-- [x] API 文件（Swagger）
-- [x] Prompt 設計文件
-- [x] 測試案例（CEFR A1~C1）
+1. 複製 `frontend/.env.example` 為 `frontend/.env.local`
+2. 複製 `backend/.env.example` 為 `backend/.env`
+
+前端至少要有：
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+若尚未準備 API Key，可先留空，系統會自動進入 **Mock 模式**。
 
 ---
 
-## 現況盤點與 Release 1 分析
+### 步驟 B：啟動 Backend（FastAPI）
 
-- `spec/release1-gap-analysis.md`
+在 PowerShell：
 
-## API 文件位置
+```powershell
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-- Swagger UI：`/docs`
-- ReDoc：`/redoc`
-- OpenAPI：`/openapi.json`
-- 補充說明：`spec/api-swagger.md`
+健康檢查：
 
-## Prompt 設計文件
+- 瀏覽器開啟 `http://localhost:8000/healthz`
+- 預期回應：`{"status":"ok"}`
 
-- `spec/prompt-design.md`
+---
 
-## 測試
+### 步驟 C：啟動 Frontend（Next.js）
 
-在 `backend/` 執行：
+另開一個 PowerShell：
 
-- `pytest`
+```powershell
+cd frontend
+npm install
+npm run dev
+```
 
-涵蓋：
-- Chat streaming
-- 核心學習 API
-- CEFR A1~C1 案例
-- Session 持久化
+瀏覽器開啟：
 
-## 設定檔
+- `http://localhost:3000`
 
-- `.env.example`：環境變數範例
-- `backend/app/config.py`：讀取 `OPENAI_API_KEY`、`GEMINI_API_KEY`、`DATABASE_URL`
+---
 
-## 最新目錄結構
+## 2) 前後端連線驗收（Stage 0）
+
+- 前端讀取 `NEXT_PUBLIC_API_BASE_URL`
+- 前端可呼叫後端 API
+- 若後端未啟動，前端仍可開啟，不會白屏
+- API 失敗時會顯示友善繁中訊息（例如：系統暫時無法連線）
+
+---
+
+## 3) 最小鏈路（Stage 0.5）
+
+### Backend 最小 API
+
+- `GET /healthz`
+- `POST /api/chat`（SSE Streaming）
+- `POST /api/chat/complete`（非串流備援）
+
+### Frontend 最小功能
+
+- 可輸入訊息
+- 可送出到 `/api/chat`
+- 可顯示 AI 回應
+- 無 API Key 時進入 Mock 模式，畫面會明確顯示「目前為模擬模式（Mock）」
+
+---
+
+## 4) 一鍵啟動（Mode B / 交付模式）
+
+根目錄提供：
+
+- `run_app.bat`
+
+可雙擊啟動（會協助檢查並啟動前後端）。
+
+---
+
+## 5) 常見錯誤排查
+
+### Q1：前端顯示「系統暫時無法連線」
+
+- 請先確認後端終端機是否正在執行 `uvicorn`
+- 確認 `frontend/.env.local` 的 `NEXT_PUBLIC_API_BASE_URL` 是否正確
+- 確認 Windows 防火牆未阻擋 `8000`
+
+### Q2：`/healthz` 無法開啟
+
+- 確認埠號是否被占用
+- 可改用：
+
+```powershell
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+```
+
+若改成 8001，請同步更新 `frontend/.env.local`：
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8001
+```
+
+### Q3：沒有 API Key 能用嗎？
+
+可以。系統會自動切換到 Mock 模式，供流程測試與 UI 驗收。
+
+---
+
+## 6) 測試（Backend）
+
+```powershell
+cd backend
+pytest
+```
+
+---
+
+## 7) 專案結構（節錄）
 
 ```text
 english-growth-ai-agent/
-├─ .github/
-│  └─ workflows/
-│     └─ custom-task-template.yml
 ├─ backend/
 │  ├─ app/
-│  │  ├─ main.py
-│  │  ├─ learning_engine.py
-│  │  ├─ speech_service.py
-│  │  └─ state_store.py
 │  ├─ tests/
-│  │  ├─ test_chat.py
-│  │  ├─ test_learning_api.py
-│  │  └─ test_cefr_levels.py
-│  └─ requirements.txt
+│  └─ .env.example
 ├─ frontend/
-├─ spec/
-│  ├─ english-growth-ai-agent-spec.md
-│  ├─ api-swagger.md
-│  └─ prompt-design.md
-├─ data/
-│  └─ app_state.json (執行後自動生成)
-├─ .env.example
-├─ .env
-├─ port.config  # 啟動時自動生成，記錄實際使用連接埠
-├─ requirements.txt
-├─ project_launcher.py  # 一次啟動前後端，並自動開啟瀏覽器
-├─ run_app.bat  # Windows 一鍵啟動入口
-├─ todo.md
+│  ├─ app/
+│  └─ .env.example
+├─ run_app.bat
 └─ README.md
 ```
