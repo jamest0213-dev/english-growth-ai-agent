@@ -3,17 +3,17 @@
 import { useState } from 'react'
 
 export default function CoachPage() {
-    const [input, setInput] = useState('')
-    const [result, setResult] = useState('')
+    const [input, setInput] = useState<string>('')
+    const [result, setResult] = useState<string>('')
 
     const handleSubmit = () => {
-        if (!input) return
+        if (!input.trim()) return
 
-        // 👉 mock AI（避免壞掉）
+        // 👉 mock AI（穩定版）
         const feedback = `修正句子：${input}\n建議：句型正確，但可以更自然`
 
         setResult(feedback)
-        setInput('')
+        setInput('') // ✅ 一定要給字串
     }
 
     return (
@@ -25,7 +25,9 @@ export default function CoachPage() {
             <div style={{ marginTop: 20 }}>
                 <input
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setInput(e.target.value)
+                    }
                     placeholder="輸入英文句子..."
                     style={{
                         padding: 10,
@@ -34,7 +36,13 @@ export default function CoachPage() {
                     }}
                 />
 
-                <button onClick={handleSubmit}>
+                <button
+                    onClick={handleSubmit}
+                    style={{
+                        padding: '10px 20px',
+                        cursor: 'pointer'
+                    }}
+                >
                     送出
                 </button>
             </div>
