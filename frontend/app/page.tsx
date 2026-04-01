@@ -1,24 +1,55 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
-export default function HomePage() {
-  const [health, setHealth] = useState('checking...');
+export default function Home() {
+  const [streak, setStreak] = useState(0)
 
   useEffect(() => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
+    const today = new Date().toDateString()
+    const lastDate = localStorage.getItem('lastStudyDate')
+    let currentStreak = Number(localStorage.getItem('streak') || 0)
 
-    fetch(`${baseUrl}/healthz`)
-      .then((response) => response.json())
-      .then((data) => setHealth(data.status ?? 'unknown'))
-      .catch(() => setHealth('unreachable'));
-  }, []);
+    if (!lastDate) {
+      // 第一次
+      currentStreak = 1
+    } else {
+      const last = new Date(lastDate)
+      const diff =
+        (new Date(today).getTime() - last.getTime()) /
+        (1000 * 60 * 60 * 24)
+
+      if (diff === 1) {
+        currentStreak += 1
+      } else if (diff > 1) {
+        currentStreak = 1
+      }
+    }
+
+    localStorage.setItem('lastStudyDate', today)
+    localStorage.setItem('streak', String(currentStreak))
+    setStreak(currentStreak)
+  }, [])
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-4 p-6">
-      <h1 className="text-3xl font-bold">English Growth AI Agent MVP</h1>
-      <p className="text-lg">Stage 0 scaffold is running.</p>
-      <div className="rounded-md bg-white px-4 py-2 shadow">API health: {health}</div>
+    <main style={{ padding: 40 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 'bold' }}>
+        English Growth AI Agent
+      </h1>
+
+      <div style={{ marginTop: 20 }}>
+        <h2 style={{ fontSize: 20 }}>
+          🔥 連續學習 {streak} 天
+        </h2>
+      </div>
+
+      <div style={{ marginTop: 40 }}>
+        <p>開始你的英文學習：</p>
+        <ul>
+          <li>/learn 👉 今日學習</li>
+          <li>/coach 👉 AI 教練</li>
+        </ul>
+      </div>
     </main>
-  );
+  )
 }
