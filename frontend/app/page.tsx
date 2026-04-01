@@ -3,32 +3,37 @@
 import { useEffect, useState } from 'react'
 
 export default function Home() {
-  const [streak, setStreak] = useState(0)
+  const [streak, setStreak] = useState<number>(0)
 
   useEffect(() => {
-    const today = new Date().toDateString()
-    const lastDate = localStorage.getItem('lastStudyDate')
-    let currentStreak = Number(localStorage.getItem('streak') || 0)
+    try {
+      const today = new Date().toDateString()
+      const lastDate = localStorage.getItem('lastStudyDate')
+      let currentStreak = Number(localStorage.getItem('streak') || 0)
 
-    if (!lastDate) {
-      // 第一次
-      currentStreak = 1
-    } else {
-      const last = new Date(lastDate)
-      const diff =
-        (new Date(today).getTime() - last.getTime()) /
-        (1000 * 60 * 60 * 24)
-
-      if (diff === 1) {
-        currentStreak += 1
-      } else if (diff > 1) {
+      if (!lastDate) {
+        // 第一次使用
         currentStreak = 1
-      }
-    }
+      } else {
+        const last = new Date(lastDate)
+        const diff =
+          (new Date(today).getTime() - last.getTime()) /
+          (1000 * 60 * 60 * 24)
 
-    localStorage.setItem('lastStudyDate', today)
-    localStorage.setItem('streak', String(currentStreak))
-    setStreak(currentStreak)
+        if (diff === 1) {
+          currentStreak += 1
+        } else if (diff > 1) {
+          currentStreak = 1
+        }
+      }
+
+      localStorage.setItem('lastStudyDate', today)
+      localStorage.setItem('streak', String(currentStreak))
+      setStreak(currentStreak)
+    } catch (error) {
+      console.error('讀取學習紀錄失敗', error)
+      setStreak(1)
+    }
   }, [])
 
   return (
