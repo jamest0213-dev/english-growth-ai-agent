@@ -1,16 +1,15 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { ReactNode } from 'react';
+import type { Metadata } from 'next'
+import { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title: 'English Growth AI Agent',
   description: 'MVP scaffold',
-};
+}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="zh-TW">
       <body>{children}</body>
     </html>
-  );
+  )
 }
